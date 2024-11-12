@@ -1,8 +1,8 @@
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
-const width = 500.;
-const height = 500.;
+const width = 400.;
+const height = 400.;
 
 renderer.setSize(width, height);
 //renderer.setSize(window.innerWidth, window.innerHeight);
@@ -24,7 +24,7 @@ const fragmentShader = `
     uniform float u_height;
     uniform float u_width;
 
-    const int MAX_STEPS = 100;
+    const int MAX_STEPS = 70;
     const float MAX_DIST = 100.0;
     const float SURF_DIST_MARGIN = .01;
 
@@ -67,8 +67,7 @@ const fragmentShader = `
     }
 
     void main() {
-        //vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.y;
-        vec2 uv = gl_FragCoord.xy / vec2(u_width, u_height)-0.5;
+        vec2 uv = vec2((gl_FragCoord.x / u_width)-.5, (gl_FragCoord.y / u_height)-.5);
 
         vec3 rayOrigin = vec3(0, 1, 0);
         vec3 rayDir = normalize(vec3(uv.x, uv.y, 1));
@@ -86,7 +85,8 @@ const fragmentShader = `
         //col = vec3(scaledDistFromCam, .5, .8);
 
         scaledDistFromCam = distFromCam;
-        vec3 col = vec3(sin(scaledDistFromCam-(u_time/2.)), 0.15, 0.3);
+        vec3 col = vec3(sin(scaledDistFromCam-(u_time/2.)), 0.3, 0.5);
+        //vec3 col = vec3(sin(scaledDistFromCam-(u_time)), 0.5, 1); 
 
         gl_FragColor = vec4(col, 1.0);
     }
@@ -105,7 +105,9 @@ const shaderMaterial = new THREE.ShaderMaterial({
 });
 
 const plane = new THREE.Mesh(geometry, shaderMaterial);
+const plane2 = new THREE.Mesh(geometry, shaderMaterial);
 scene.add(plane);
+scene.add(plane2);
 camera.position.z = 1; // Position the camera to see the plane
 
 function animate(time) {
